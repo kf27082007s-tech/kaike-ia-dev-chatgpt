@@ -37,7 +37,7 @@ const seedTickets = [
 ];
 
 let tickets = loadTickets();
-let selectedTicketId = tickets[0]?.id ?? null;
+let selectedTicketId = tickets.find((ticket) => ticket.status !== "Resolvido")?.id ?? null;
 
 const views = document.querySelectorAll(".view");
 const tabs = document.querySelectorAll(".tab");
@@ -130,10 +130,16 @@ function render() {
 function renderTicketList() {
   const term = searchInput.value.trim().toLowerCase();
   const filteredTickets = tickets.filter((ticket) => {
-    return (
+    return ticket.status !== "Resolvido" && (
       String(ticket.id).includes(term) ||
       ticket.title.toLowerCase().includes(term)
     );
+  }).sort((a, b) => {
+    const priorityOrder = ["Crítica", "Alta", "Média", "Baixa"];
+    const aPriority = priorityOrder.indexOf(a.priority);
+    const bPriority = priorityOrder.indexOf(b.priority);
+    return (aPriority < 0 ? priorityOrder.length : aPriority) -
+      (bPriority < 0 ? priorityOrder.length : bPriority);
   });
 
   ticketCounter.textContent = `${filteredTickets.length} chamado${filteredTickets.length === 1 ? "" : "s"}`;
@@ -169,8 +175,8 @@ function renderTicketDetails() {
   if (!ticket) {
     ticketDetails.innerHTML = `
       <div class="empty-state">
-        <h3>Selecione um chamado</h3>
-        <p>Ao escolher um item da fila, os campos de status, prioridade e correção aparecem aqui.</p>
+        <h3>Nenhum chamado na fila</h3>
+        <p>Chamados resolvidos continuam disponíveis no Histórico.</p>
       </div>
     `;
     return;
@@ -259,6 +265,9 @@ function updateSelectedTicket(ticketId) {
   ticket.correction = newCorrection;
   ticket.updatedAt = new Date().toISOString();
   ticket.events = ticket.events.concat(eventList);
+  if (newStatus === "Resolvido") {
+    selectedTicketId = null;
+  }
 
   showToast(`Chamado #${ticket.id} atualizado.`);
   render();
