@@ -136,8 +136,7 @@ main {
 
 .form-panel,
 .details-panel,
-.ticket-list,
-.table-wrap {
+.ticket-list {
   border: 1px solid var(--line);
   border-radius: 8px;
   background: var(--panel);
@@ -319,28 +318,99 @@ textarea {
   padding-left: 18px;
 }
 
-.table-wrap {
-  overflow: auto;
+.kanban-board {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(240px, 1fr));
+  align-items: start;
+  gap: 16px;
+  overflow-x: auto;
+  padding-bottom: 8px;
 }
 
-table {
-  width: 100%;
-  border-collapse: collapse;
-  min-width: 760px;
+.kanban-column {
+  min-height: 260px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 14px;
+  background: #eef2f8;
 }
 
-th,
-td {
-  padding: 14px 16px;
-  border-bottom: 1px solid var(--line);
-  text-align: left;
-  vertical-align: top;
+.kanban-column-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 14px;
 }
 
-th {
+.kanban-column-header h3 {
+  margin: 0;
+  font-size: 16px;
+}
+
+.kanban-count {
+  display: grid;
+  min-width: 26px;
+  height: 26px;
+  place-items: center;
+  border-radius: 999px;
   color: #344054;
-  background: #f8fafc;
+  background: #fff;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.kanban-cards {
+  display: grid;
+  gap: 10px;
+}
+
+.kanban-card {
+  min-width: 0;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 13px;
+  background: #fff;
+  box-shadow: 0 3px 10px rgba(23, 32, 51, 0.05);
+}
+
+.kanban-card-top,
+.kanban-card-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.kanban-card h4 {
+  margin: 12px 0 8px;
+  font-size: 15px;
+  line-height: 1.4;
+  overflow-wrap: anywhere;
+}
+
+.kanban-requester {
+  margin-bottom: 14px;
+  color: var(--muted);
   font-size: 13px;
+}
+
+.kanban-card-footer {
+  flex-wrap: wrap;
+}
+
+.kanban-card-footer .ticket-meta {
+  font-size: 11px;
+}
+
+.kanban-empty {
+  margin: 0;
+  border: 1px dashed #c5ceda;
+  border-radius: 8px;
+  padding: 18px 10px;
+  color: var(--muted);
+  font-size: 13px;
+  text-align: center;
 }
 
 .toast {
@@ -376,5 +446,9 @@ th {
   .field-grid,
   .details-grid {
     grid-template-columns: 1fr;
+  }
+
+  .kanban-board {
+    grid-template-columns: repeat(4, minmax(260px, 1fr));
   }
 }

@@ -45,7 +45,7 @@ const ticketForm = document.querySelector("#ticketForm");
 const ticketList = document.querySelector("#ticketList");
 const ticketDetails = document.querySelector("#ticketDetails");
 const ticketCounter = document.querySelector("#ticketCounter");
-const historyTable = document.querySelector("#historyTable");
+const historyBoard = document.querySelector("#historyBoard");
 const searchInput = document.querySelector("#searchInput");
 const clearData = document.querySelector("#clearData");
 const toast = document.querySelector("#toast");
@@ -265,16 +265,42 @@ function updateSelectedTicket(ticketId) {
 }
 
 function renderHistory() {
-  historyTable.innerHTML = tickets.map((ticket) => `
-    <tr>
-      <td>#${ticket.id}</td>
-      <td>${escapeHtml(ticket.title)}</td>
-      <td>${escapeHtml(ticket.requester)}</td>
-      <td><span class="badge ${statusClass(ticket.status)}">${ticket.status}</span></td>
-      <td><span class="badge ${priorityClass(ticket.priority)}">${ticket.priority}</span></td>
-      <td>${formatDate(ticket.updatedAt)}</td>
-    </tr>
-  `).join("");
+  const knownStatuses = ["Aberto", "Em atendimento", "Aguardando usuário", "Resolvido"];
+  const statuses = [
+    ...knownStatuses,
+    ...new Set(tickets.map((ticket) => ticket.status).filter((status) => !knownStatuses.includes(status)))
+  ];
+
+  historyBoard.innerHTML = statuses.map((status, index) => {
+    const statusTickets = tickets.filter((ticket) => ticket.status === status);
+
+    return `
+      <section class="kanban-column" aria-labelledby="kanban-status-${index}">
+        <div class="kanban-column-header">
+          <h3 id="kanban-status-${index}">${escapeHtml(status)}</h3>
+          <span class="kanban-count">${statusTickets.length}</span>
+        </div>
+        <div class="kanban-cards">
+          ${statusTickets.length
+            ? statusTickets.map((ticket) => `
+              <article class="kanban-card">
+                <div class="kanban-card-top">
+                  <span class="ticket-meta">#${ticket.id}</span>
+                  <span class="badge ${priorityClass(ticket.priority)}">${escapeHtml(ticket.priority)}</span>
+                </div>
+                <h4>${escapeHtml(ticket.title)}</h4>
+                <p class="kanban-requester">${escapeHtml(ticket.requester)}</p>
+                <div class="kanban-card-footer">
+                  <span class="badge ${statusClass(ticket.status)}">${escapeHtml(ticket.status)}</span>
+                  <time class="ticket-meta" datetime="${escapeHtml(ticket.updatedAt)}">${formatDate(ticket.updatedAt)}</time>
+                </div>
+              </article>
+            `).join("")
+            : '<p class="kanban-empty">Nenhum chamado</p>'}
+        </div>
+      </section>
+    `;
+  }).join("");
 }
 
 function statusClass(status) {
